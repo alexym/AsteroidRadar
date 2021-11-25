@@ -3,15 +3,17 @@ package com.udacity.asteroidradar.main
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
+//    private val viewModel: MainViewModel by lazy {
+//        ViewModelProvider(this)[MainViewModel::class.java]
+//    }
 
-    private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
-    }
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

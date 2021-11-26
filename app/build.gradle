@@ -80,6 +80,9 @@ dependencies {
     // Material design components
     implementation "com.google.android.material:material:$version_material"
 
+    // Logging
+    implementation "com.jakewharton.timber:timber:$version_timber"
+
     implementation "android.arch.work:work-runtime-ktx:1.0.1"
 
     testImplementation "junit:junit:4.13.2"

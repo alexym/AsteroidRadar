@@ -6,20 +6,20 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 
-//@Database(entities = [DatabaseVideo::class], version = 1)
-//abstract class VideosDatabase : RoomDatabase() {
-//    abstract val videoDao: VideoDao
-//}
-//
-//private lateinit var INSTANCE: VideosDatabase
-//
-//fun getDatabase(context: Context): VideosDatabase {
-//    synchronized(VideosDatabase::class.java) {
-//        if (!::INSTANCE.isInitialized) {
-//            INSTANCE = Room.databaseBuilder(context.applicationContext,
-//                VideosDatabase::class.java,
-//                "videos").build()
-//        }
-//    }
-//    return INSTANCE
-//}
+@Database(entities = [DatabaseAsteroid::class], version = 1)
+abstract class AsteroidDatabase : RoomDatabase() {
+    abstract val asteroidDAO: AsteroidRadarDAO
+}
+
+private lateinit var INSTANCE: AsteroidDatabase
+
+fun getDatabase(context: Context): AsteroidDatabase {
+    synchronized(AsteroidDatabase::class.java) {
+        if (!::INSTANCE.isInitialized) {
+            INSTANCE = Room.databaseBuilder(context.applicationContext,
+                AsteroidDatabase::class.java,
+                "asteroid").build()
+        }
+    }
+    return INSTANCE
+}

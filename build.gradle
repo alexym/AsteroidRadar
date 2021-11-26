@@ -20,6 +20,7 @@ buildscript {
         version_play_services = "17.0.0"
         version_fragment_ktx = "1.4.0"
         version_picasso = "2.71828"
+        version_timber = "4.7.1"
     }
     repositories {
         google()

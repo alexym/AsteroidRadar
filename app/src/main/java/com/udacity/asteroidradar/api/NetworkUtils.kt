@@ -2,6 +2,7 @@ package com.udacity.asteroidradar.api
 
 import com.udacity.asteroidradar.constants.Constants
 import com.udacity.asteroidradar.domain.Asteroid
+import com.udacity.asteroidradar.domain.AsteroidImg
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -52,6 +53,13 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
         calendar.add(Calendar.DAY_OF_YEAR, 1)
     }
     return formattedDateList
+}
+
+fun getImgOfTheDayObj(jsonResult: JSONObject): AsteroidImg{
+    return AsteroidImg(
+        jsonResult.getString("url"),
+        jsonResult.getString("media_type"),
+        jsonResult.getString("title"))
 }
 
 fun getToday(): String {

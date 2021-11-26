@@ -2,8 +2,10 @@ package com.udacity.asteroidradar
 
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.adapters.ARListAdapter
 import com.udacity.asteroidradar.domain.Asteroid
 
@@ -47,7 +49,15 @@ fun bindTextViewToDisplayVelocity(textView: TextView, number: Double) {
 fun bindRecyclerView(recyclerView: RecyclerView, data: List<Asteroid>?) {
     val adapter = recyclerView.adapter as ARListAdapter
     adapter.submitList(data) {
-        // scroll the list to the top after the diffs are calculated and posted
         recyclerView.scrollToPosition(0)
+    }
+}
+
+@BindingAdapter("imageUrl")
+fun bindImage(imgView: ImageView, imgUrl: String?) {
+    imgUrl?.let {
+        Picasso.get().load(imgUrl)
+            .placeholder(R.drawable.placeholder_picture_of_day)
+            .into(imgView)
     }
 }

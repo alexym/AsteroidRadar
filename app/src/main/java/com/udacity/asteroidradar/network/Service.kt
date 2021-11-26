@@ -32,4 +32,7 @@ object Network {
 interface ARService {
     @GET("neo/rest/v1/feed")
     fun getAsteroidsAsync(@Query("start_date") startDate: String, @Query("end_date") endDate: String, @Query("api_key") api: String): Deferred<String>
+
+    @GET("planetary/apod")
+    fun getAsteroidsImgAsync(@Query("api_key") api: String): Deferred<String>
 }

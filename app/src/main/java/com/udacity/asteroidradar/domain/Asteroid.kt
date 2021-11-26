@@ -16,6 +16,11 @@ data class Asteroid(
     val isPotentiallyHazardous: Boolean
 ) : Parcelable
 
+data class AsteroidImg(
+    val url: String,
+    val media_type: String,
+    val title: String
+)
 
 fun List<Asteroid>.asDatabaseModel(): List<DatabaseAsteroid> {
     return map {

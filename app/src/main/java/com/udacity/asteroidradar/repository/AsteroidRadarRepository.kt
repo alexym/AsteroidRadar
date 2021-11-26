@@ -2,13 +2,15 @@ package com.udacity.asteroidradar.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import com.udacity.asteroidradar.BuildConfig
+import com.udacity.asteroidradar.api.getImgOfTheDayObj
 import com.udacity.asteroidradar.api.getNextSevenDays
 import com.udacity.asteroidradar.api.getToday
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
-import com.udacity.asteroidradar.constants.Constants
 import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.database.asDomainModel
 import com.udacity.asteroidradar.domain.Asteroid
+import com.udacity.asteroidradar.domain.AsteroidImg
 import com.udacity.asteroidradar.domain.asDatabaseModel
 import com.udacity.asteroidradar.network.Network
 import kotlinx.coroutines.Dispatchers
@@ -27,10 +29,22 @@ class AsteroidRadarRepository(private val database: AsteroidDatabase) {
             val asteroids = Network.arService.getAsteroidsAsync(
                 getToday(),
                 getNextSevenDays(),
-                Constants.KEY_URL
+                BuildConfig.API_KEY
             ).await()
             val parcelAsteroids = parseAsteroidsJsonResult(JSONObject(asteroids))
             database.asteroidDAO.insertAll(parcelAsteroids.asDatabaseModel())
         }
+    }
+
+
+    suspend fun getImageOfTheDay():AsteroidImg {
+        val parcelAsteroids:AsteroidImg
+        withContext(Dispatchers.IO) {
+            val asteroidsImg = Network.arService.getAsteroidsImgAsync(
+                BuildConfig.API_KEY
+            ).await()
+             parcelAsteroids = getImgOfTheDayObj(JSONObject(asteroidsImg))
+        }
+        return parcelAsteroids
     }
 }

@@ -2,8 +2,8 @@ package com.udacity.asteroidradar.main
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.udacity.asteroidradar.constants.Constants
 import com.udacity.asteroidradar.database.getDatabase
-import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.domain.AsteroidImg
 import com.udacity.asteroidradar.repository.AsteroidRadarRepository
 import kotlinx.coroutines.Job
@@ -24,14 +24,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            _imgOfTheDay.value = asteroidRepository.getImageOfTheDay()
+            val asteroidImage = asteroidRepository.getImageOfTheDay()
+            if (asteroidImage.media_type == Constants.KEY_URL)
+                _imgOfTheDay.value = asteroidImage
             asteroidRepository.refreshAsteroids()
         }
     }
 
-    val asteroidList= asteroidRepository.asteroids
-
-
+    val asteroidList = asteroidRepository.asteroids
 
 
     class Factory(val app: Application) : ViewModelProvider.Factory {

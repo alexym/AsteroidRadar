@@ -1,6 +1,7 @@
 package com.udacity.asteroidradar.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.BuildConfig
 import com.udacity.asteroidradar.api.getImgOfTheDayObj
@@ -16,6 +17,7 @@ import com.udacity.asteroidradar.network.Network
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import timber.log.Timber
 
 class AsteroidRadarRepository(private val database: AsteroidDatabase) {
 
@@ -23,6 +25,11 @@ class AsteroidRadarRepository(private val database: AsteroidDatabase) {
         Transformations.map(database.asteroidDAO.getAsteroids()) {
             it.asDomainModel()
         }
+
+    private val _imgOfTheDay = MutableLiveData<AsteroidImg>()
+
+    val imgOfTheDay: LiveData<AsteroidImg>
+        get() = _imgOfTheDay
 
     suspend fun refreshAsteroids() {
         withContext(Dispatchers.IO) {
@@ -43,6 +50,7 @@ class AsteroidRadarRepository(private val database: AsteroidDatabase) {
             val asteroidsImg = Network.arService.getAsteroidsImgAsync(
                 BuildConfig.API_KEY
             ).await()
+            Timber.i(asteroidsImg)
              parcelAsteroids = getImgOfTheDayObj(JSONObject(asteroidsImg))
         }
         return parcelAsteroids

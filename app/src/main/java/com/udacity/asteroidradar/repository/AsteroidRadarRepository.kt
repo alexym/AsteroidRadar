@@ -17,12 +17,12 @@ import com.udacity.asteroidradar.network.Network
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import timber.log.Timber
+import java.io.IOException
 
 class AsteroidRadarRepository(private val database: AsteroidDatabase) {
 
     val asteroids: LiveData<List<Asteroid>> =
-        Transformations.map(database.asteroidDAO.getAsteroids()) {
+        Transformations.map(database.asteroidDAO.getAsteroids(getToday())) {
             it.asDomainModel()
         }
 
@@ -31,28 +31,37 @@ class AsteroidRadarRepository(private val database: AsteroidDatabase) {
     val imgOfTheDay: LiveData<AsteroidImg>
         get() = _imgOfTheDay
 
+
     suspend fun refreshAsteroids() {
         withContext(Dispatchers.IO) {
-            val asteroids = Network.arService.getAsteroidsAsync(
-                getToday(),
-                getNextSevenDays(),
-                BuildConfig.API_KEY
-            ).await()
-            val parcelAsteroids = parseAsteroidsJsonResult(JSONObject(asteroids))
-            database.asteroidDAO.insertAll(parcelAsteroids.asDatabaseModel())
+            try {
+                val asteroids = Network.arService.getAsteroidsAsync(
+                    getToday(),
+                    getNextSevenDays(),
+                    BuildConfig.API_KEY
+                ).await()
+                val parcelAsteroids = parseAsteroidsJsonResult(JSONObject(asteroids))
+                database.asteroidDAO.insertAll(parcelAsteroids.asDatabaseModel())
+            } catch (networkError: IOException) {
+                networkError.printStackTrace()
+            }
         }
     }
 
 
-    suspend fun getImageOfTheDay():AsteroidImg {
-        val parcelAsteroids:AsteroidImg
+    suspend fun getImageOfTheDay() {
         withContext(Dispatchers.IO) {
-            val asteroidsImg = Network.arService.getAsteroidsImgAsync(
-                BuildConfig.API_KEY
-            ).await()
-            Timber.i(asteroidsImg)
-             parcelAsteroids = getImgOfTheDayObj(JSONObject(asteroidsImg))
+            try {
+                val asteroidsImg = Network.arService.getAsteroidsImgAsync(
+                    BuildConfig.API_KEY
+                ).await()
+                val imgOfTheDayObj = getImgOfTheDayObj(JSONObject(asteroidsImg))
+                if (imgOfTheDayObj.media_type == "image")
+                    _imgOfTheDay.postValue(imgOfTheDayObj)
+            } catch (networkError: IOException) {
+                networkError.printStackTrace()
+            }
         }
-        return parcelAsteroids
     }
+
 }

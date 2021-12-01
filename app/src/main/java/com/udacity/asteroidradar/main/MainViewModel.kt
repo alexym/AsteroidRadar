@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.constants.Constants
 import com.udacity.asteroidradar.database.getDatabase
+import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.domain.AsteroidImg
 import com.udacity.asteroidradar.repository.AsteroidRadarRepository
 import kotlinx.coroutines.Job
@@ -13,25 +14,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val database = getDatabase(application)
     private val asteroidRepository = AsteroidRadarRepository(database)
-
-    private val _imgOfTheDay = MutableLiveData<AsteroidImg>()
-
-    val imgOfTheDay: LiveData<AsteroidImg>
-        get() = _imgOfTheDay
-
     private var currentJob: Job? = null
 
+    private val _navigateToSelected = MutableLiveData<Asteroid>()
+
+    val navigateToSelected: LiveData<Asteroid>
+        get() = _navigateToSelected
 
     init {
         viewModelScope.launch {
-            val asteroidImage = asteroidRepository.getImageOfTheDay()
-            if (asteroidImage.media_type == Constants.KEY_URL)
-                _imgOfTheDay.value = asteroidImage
+            asteroidRepository.getImageOfTheDay()
             asteroidRepository.refreshAsteroids()
         }
     }
 
     val asteroidList = asteroidRepository.asteroids
+    val imgOfTheDay = asteroidRepository.imgOfTheDay
+
+    fun displayDetails(marsProperty: Asteroid) {
+        _navigateToSelected.value = marsProperty
+    }
+
+    fun displayDetailsComplete() {
+        _navigateToSelected.value = null
+    }
+
 
 
     class Factory(val app: Application) : ViewModelProvider.Factory {

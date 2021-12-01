@@ -18,7 +18,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/normal_margin">
+        android:padding="@dimen/normal_margin"
+        android:onClick="@{() -> clickListener.onClick(arObj)}">
 
         <TextView
             android:id="@+id/name_tv"

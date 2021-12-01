@@ -8,11 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.adapters.ARClickListener
 import com.udacity.asteroidradar.adapters.ARListAdapter
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import com.udacity.asteroidradar.domain.Asteroid
+import timber.log.Timber
 
 class MainFragment : Fragment() {
     private val viewModel: MainViewModel by lazy {
@@ -29,9 +31,10 @@ class MainFragment : Fragment() {
 
         binding.viewModel = viewModel
         val adapter = ARListAdapter(ARClickListener { asteroidObj ->
-
+            viewModel.displayDetails(asteroidObj)
         })
         binding.asteroidRecycler.adapter = adapter
+
         setHasOptionsMenu(true)
 
         return binding.root
@@ -39,12 +42,12 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        viewModel.asteroidList.observe(viewLifecycleOwner,object : Observer<List<Asteroid>>{
-//            override fun onChanged(t: List<Asteroid>?) {
-//
-//            }
-//
-//        })
+        viewModel.navigateToSelected.observe(this, {
+            if ( null != it ) {
+                this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
+                viewModel.displayDetailsComplete()
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

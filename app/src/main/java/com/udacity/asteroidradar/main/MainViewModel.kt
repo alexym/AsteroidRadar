@@ -2,10 +2,9 @@ package com.udacity.asteroidradar.main
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.udacity.asteroidradar.constants.Constants
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.domain.Asteroid
-import com.udacity.asteroidradar.domain.AsteroidImg
+import com.udacity.asteroidradar.repository.AsteroidFilter
 import com.udacity.asteroidradar.repository.AsteroidRadarRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -18,18 +17,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _navigateToSelected = MutableLiveData<Asteroid>()
 
+
     val navigateToSelected: LiveData<Asteroid>
         get() = _navigateToSelected
 
+
     init {
         viewModelScope.launch {
+            getAsteroids(AsteroidFilter.SHOW_WEEK)
             asteroidRepository.getImageOfTheDay()
             asteroidRepository.refreshAsteroids()
         }
     }
 
-    val asteroidList = asteroidRepository.asteroids
     val imgOfTheDay = asteroidRepository.imgOfTheDay
+    val asteroidList = asteroidRepository.asteroidList
 
     fun displayDetails(marsProperty: Asteroid) {
         _navigateToSelected.value = marsProperty
@@ -39,6 +41,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _navigateToSelected.value = null
     }
 
+    private suspend fun getAsteroids(filter: AsteroidFilter){
+        asteroidRepository.getAsteroids(filter)
+    }
+
+    fun updateFilter(filter: AsteroidFilter) {
+        viewModelScope.launch {
+            getAsteroids(filter)
+        }
+    }
 
 
     class Factory(val app: Application) : ViewModelProvider.Factory {

@@ -14,6 +14,7 @@ import com.udacity.asteroidradar.adapters.ARClickListener
 import com.udacity.asteroidradar.adapters.ARListAdapter
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import com.udacity.asteroidradar.domain.Asteroid
+import com.udacity.asteroidradar.repository.AsteroidFilter
 import timber.log.Timber
 
 class MainFragment : Fragment() {
@@ -56,6 +57,13 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        viewModel.updateFilter(
+            when (item.itemId) {
+                R.id.week_menu -> AsteroidFilter.SHOW_WEEK
+                R.id.today_menu -> AsteroidFilter.SHOW_TODAY
+                else -> AsteroidFilter.SHOW_ALL
+            }
+        )
         return true
     }
 }

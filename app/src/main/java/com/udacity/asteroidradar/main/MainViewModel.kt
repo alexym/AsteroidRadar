@@ -6,15 +6,13 @@ import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.repository.AsteroidFilter
 import com.udacity.asteroidradar.repository.AsteroidRadarRepository
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val database = getDatabase(application)
     private val asteroidRepository = AsteroidRadarRepository(database)
-    private var currentJob: Job? = null
-
     private val _navigateToSelected = MutableLiveData<Asteroid>()
 
 
@@ -32,6 +30,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val imgOfTheDay = asteroidRepository.imgOfTheDay
     val asteroidList = asteroidRepository.asteroidList
+    val status = asteroidRepository.status
 
     fun displayDetails(marsProperty: Asteroid) {
         _navigateToSelected.value = marsProperty

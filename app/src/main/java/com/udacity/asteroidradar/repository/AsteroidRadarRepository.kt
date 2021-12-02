@@ -3,6 +3,7 @@ package com.udacity.asteroidradar.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.udacity.asteroidradar.BuildConfig
+import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.api.getImgOfTheDayObj
 import com.udacity.asteroidradar.api.getNextSevenDays
 import com.udacity.asteroidradar.api.getToday
@@ -20,12 +21,16 @@ import timber.log.Timber
 import java.io.IOException
 
 enum class AsteroidFilter(val value: String) { SHOW_TODAY("today"), SHOW_WEEK("week"), SHOW_ALL("all") }
+enum class ApiStatus { LOADING, ERROR, DONE }
 class AsteroidRadarRepository(private val database: AsteroidDatabase) {
 
-    private val _imgOfTheDay = MutableLiveData<AsteroidImg>()
+    private val _imgOfTheDay = MutableLiveData<PictureOfDay>()
     private val _asteroidList = MutableLiveData<List<Asteroid>>()
+    private val _status = MutableLiveData<ApiStatus>()
 
-    val imgOfTheDay: LiveData<AsteroidImg>
+    val status: LiveData<ApiStatus>
+        get() = _status
+    val imgOfTheDay: LiveData<PictureOfDay>
         get() = _imgOfTheDay
     val asteroidList: LiveData<List<Asteroid>>
         get() = _asteroidList
@@ -72,15 +77,17 @@ class AsteroidRadarRepository(private val database: AsteroidDatabase) {
 
     suspend fun getImageOfTheDay() {
         withContext(Dispatchers.IO) {
+            _status.postValue(ApiStatus.LOADING)
             try {
-                val asteroidsImg = Network.arService.getAsteroidsImgAsync(
+                val asteroidsImg = Network.arServiceM.getAsteroidsImgAsync(
                     BuildConfig.API_KEY
                 ).await()
-                val imgOfTheDayObj = getImgOfTheDayObj(JSONObject(asteroidsImg))
-                if (imgOfTheDayObj.media_type == "image")
-                    _imgOfTheDay.postValue(imgOfTheDayObj)
+                _status.postValue(ApiStatus.DONE)
+                if (asteroidsImg.mediaType == "image")
+                    _imgOfTheDay.postValue(asteroidsImg)
             } catch (networkError: IOException) {
                 networkError.printStackTrace()
+                _status.postValue(ApiStatus.ERROR)
             }
         }
     }

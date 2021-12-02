@@ -1,13 +1,16 @@
 package com.udacity.asteroidradar.adapters
 
+import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
+import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.domain.Asteroid
-import com.udacity.asteroidradar.domain.AsteroidImg
+import com.udacity.asteroidradar.repository.ApiStatus
 
 @BindingAdapter("statusIcon")
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
@@ -56,7 +59,7 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<Asteroid>?) {
 }
 
 @BindingAdapter("imageOftheDay")
-fun bindImage(imgView: ImageView, asteroidImg: AsteroidImg?) {
+fun bindImage(imgView: ImageView, asteroidImg: PictureOfDay?) {
     asteroidImg?.let {
         Picasso.get().load(asteroidImg.url)
             .placeholder(R.drawable.placeholder_picture_of_day)
@@ -66,11 +69,26 @@ fun bindImage(imgView: ImageView, asteroidImg: AsteroidImg?) {
 }
 
 @BindingAdapter("titleImg")
-fun bindImage(textView: TextView, asteroidImg: AsteroidImg?) {
+fun bindImage(textView: TextView, asteroidImg: PictureOfDay?) {
     asteroidImg?.let {
         val context = textView.context
         textView.text = String.format(context.getString(R.string.image_of_the_day_title), asteroidImg.title)
         textView.contentDescription = String.format(context.getString(R.string.image_of_the_day_title), asteroidImg.title)
+    }
+}
+
+@BindingAdapter("progressStatus")
+fun bindStatus(statusProgressB: ProgressBar, status: ApiStatus?) {
+    when (status) {
+        ApiStatus.LOADING -> {
+            statusProgressB.visibility = View.VISIBLE
+        }
+        ApiStatus.ERROR -> {
+            statusProgressB.visibility = View.GONE
+        }
+        ApiStatus.DONE -> {
+            statusProgressB.visibility = View.GONE
+        }
     }
 }
 

@@ -55,6 +55,7 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     return formattedDateList
 }
 
+//whith scalar
 fun getImgOfTheDayObj(jsonResult: JSONObject): AsteroidImg{
     return AsteroidImg(
         jsonResult.getString("url"),
